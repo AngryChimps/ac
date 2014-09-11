@@ -1,0 +1,13 @@
+<?php
+
+namespace {{namespace}};
+
+use norm\core\NormBaseCollection;
+
+class {{className}}CollectionBase extends NormBaseCollection {
+    protected static $tableName = '{{tableName}}';
+    protected static $singularClassName = '{{className}}';
+    protected static $primaryKeyFieldNames = array({{primaryKeyFieldNamesQuotedString}});
+    protected static $primaryKeyPropertyNames = array({{primaryKeyPropertyNamesQuotedString}});
+    protected static $autoIncrementFieldName = '{{autoIncrementFieldName}}';
+}
