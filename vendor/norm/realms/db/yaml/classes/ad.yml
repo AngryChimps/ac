@@ -1,0 +1,40 @@
+primary_keys:
+  - ad_key
+
+fields:
+  - ad_key:
+    type: string
+  - location_key:
+    type: string
+  - company_key:
+    type: string
+  - category_name:
+    type: string
+  - subcategory_name:
+    type: string
+  - title:
+    type: string
+  - description:
+    type: string
+  - minutes_required:
+    type: int
+  - minutes_booking_notice:
+    type: int
+  - minutes_avail_interval:
+    type: int
+  - price:
+    type: decimal
+  - discount:
+    type: float
+  - body:
+    type: string
+  - flag_total:
+    type: int
+  - flag_keys:
+    type: string[]
+  - status:
+    type: AdStatus
+  - created_at:
+    type: DateTime
+  - updated_at:
+    type: DateTime

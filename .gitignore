@@ -7,6 +7,6 @@
 !app/logs/.gitkeep
 /build/
 /vendor/*
-!vendor/nORM
+!vendor/norm
 /bin/
 /composer.phar

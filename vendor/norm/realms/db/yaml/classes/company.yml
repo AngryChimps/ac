@@ -1,0 +1,28 @@
+primary_keys:
+  - company_key
+
+fields:
+  - company_key:
+    type: string
+  - name:
+    type: string
+  - description:
+    type: string
+  - address:
+    type: string
+  - plan:
+    type: CompanyPlan
+  - rating_count:
+    type: int
+  - rating_total:
+    type: int
+  - rating_avg:
+    type: float
+  - flag_total:
+    type: int
+  - administer_member_keys:
+    type: string[]
+  - created_at:
+    type: DateTime
+  - updated_at:
+    type: DateTime

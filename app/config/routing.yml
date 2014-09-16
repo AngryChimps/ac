@@ -1,0 +1,4 @@
+angry_chimps_ac:
+    resource: "@AngryChimpsAcBundle/Resources/config/routing.yml"
+    prefix:   /
+
