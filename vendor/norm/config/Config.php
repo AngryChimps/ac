@@ -5,19 +5,12 @@ namespace norm\config;
 class Config {
 
     public static $realms = array(
-        'db' => array(
-            'referenceDatastore' => array(
-                'driver' => 'mysql',
-                'dbname' => 'ac',
-                'host' => 'localhost',
-                'port' => 3379,
-                'user' => 'root',
-                'password' => '',
-            ),
-//            'tablePrefix' => '',
-//            'defaultStorageEngine' => 'innodb',
-//            'defaultCollation' => 'utf8',
-            'defaultPrimaryDatastore' => 'mt',
+        'riak' => array(
+            'defaultPrimaryDatastore' => 'riak',
+            'defaultCacheDatastore' => null,
+        ),
+        'mysql' => array(
+            'defaultPrimaryDatastore' => 'mysql',
             'defaultCacheDatastore' => null,
         ),
         '_norm_test' => array(
@@ -41,7 +34,12 @@ class Config {
      * @var array
      */
     public static $datastores = array (
-        'mt' => array(
+        'riak' => array(
+            'driver' => 'riak',
+            'host' => 'localhost',
+            'port' => 8087
+        ),
+        'mysql' => array(
             'driver' => 'mysql',
             'dbname' => 'ac',
             'host' => 'localhost',

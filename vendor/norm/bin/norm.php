@@ -21,9 +21,10 @@ switch($argv[1]) {
         break;
 
     case 'generate_test':
-        $generator->generate('_norm_test');
+        $generator->generate_tests('mysql');
+        $generator->generate_tests('riak');
         break;
     case 'test':
-        system("../vendor/bin/phpunit --verbose /home/user/www/norm/test");
+        system("../vendor/bin/phpunit --verbose /home/user/www/vendor/norm/test");
         break;
 }

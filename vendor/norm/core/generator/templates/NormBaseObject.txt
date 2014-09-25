@@ -1,5 +1,5 @@
 <?php
-namespace {{namespace}};
+namespace {{namespace}}\base;
 
 use norm\core\NormBaseObject;
 
@@ -43,6 +43,12 @@ class {{className}}Base extends NormBaseObject {
 
     /** @var bool */
     protected static $hasAutoIncrement = {{hasAutoIncrement}};
+
+    {{#each enums}}
+    {{#each values}}
+    const {{name}} = {{value}};
+    {{/each}}
+    {{/each}}
 
     {{#each properties}}
     /** @var {{type}} */

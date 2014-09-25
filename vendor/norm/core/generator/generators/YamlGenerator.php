@@ -6,6 +6,7 @@ namespace norm\core\generator\generators;
 
 use norm\core\datastore\AbstractDatastore;
 use norm\core\exceptions\UnsupportedColumnType;
+use norm\core\generator\types\Enum;
 use norm\core\generator\types\PrimaryKey;
 use norm\core\generator\types\Schema;
 use norm\core\generator\types\Table;
@@ -13,11 +14,12 @@ use norm\core\generator\types\Column;
 use norm\core\generator\types\ForeignKey;
 
 class YamlGenerator extends AbstractGenerator {
-    /** @var  AbstractDatastore */
-    private $datastore;
+    protected $isTest;
+    protected $realm;
 
-    public function __construct(AbstractDatastore $datastore) {
-        $this->datastore = $datastore;
+    public function __construct($realm, $isTest) {
+        $this->realm = $realm;
+        $this->isTest = $isTest;
     }
 
     /**
@@ -27,6 +29,7 @@ class YamlGenerator extends AbstractGenerator {
         $schema = new Schema();
 
         foreach($this->getTableNames() as $tableName) {
+echo "Processing table: $tableName\n";
             $table = new Table();
             $table->name = $tableName;
 //            $table->comment = $row['TABLE_COMMENT'];
@@ -37,18 +40,30 @@ class YamlGenerator extends AbstractGenerator {
                 $table->primaryKeyNames = $tableData['primary_keys'];
             }
             $ordinalPosition = 0;
-            foreach($tableData['fields'] as $fieldName => $fieldData) {
+            foreach($tableData['fields'] as $fieldData) {
                 $column = new Column();
-                $column->name = $fieldName;
+                $column->name = $fieldData['name'];
                 $column->position = $ordinalPosition;
                 $column->default = isset($fieldData['default']) ? $fieldData['default'] : null;
 //                $column->typeWithLength = $columnRow['COLUMN_TYPE'];
-                $column->type = $fieldData['type'];
-//                $column->length = isset($fieldData['length']) ? $fieldData['length'] : null;
 
-//                if($columnRow['EXTRA'] === 'auto_increment') {
-//                    $table->autoIncrementName = $column->name;
-//                }
+                if(strtolower($fieldData['type']) === 'enum') {
+                    $column->type = 'int';
+                    $enum = new Enum();
+                    $enum->name = $fieldData['name'];
+                    $enum->values = $fieldData['values'];
+                    $table->enums[] = $enum;
+                }
+                else {
+                    $column->type = $fieldData['type'];
+                }
+
+                if(isset($fieldData['length'])) {
+                    $column->length = $fieldData['length'];
+                }
+                if(isset($fieldData['auto_increment']) && $fieldData['auto_increment'] == 'true') {
+                    $table->autoIncrementName = $column->name;
+                }
 
                 $table->columns[$column->name] = $column;
 
@@ -82,7 +97,12 @@ class YamlGenerator extends AbstractGenerator {
     protected function getTableNames() {
         $tables = array();
 
-        $handle = opendir(__DIR__ . "/../../../realms/db/yaml/classes");
+        if($this->isTest) {
+            $handle = opendir(__DIR__ . "/../../../test/realms/" . $this->realm . "/yaml/classes");
+        }
+        else {
+            $handle = opendir(__DIR__ . "/../../../realms/" . $this->realm . "/yaml/classes");
+        }
 
         while (false !== ($entry = readdir($handle))) {
             //Ignore . and .. entries
@@ -98,7 +118,12 @@ class YamlGenerator extends AbstractGenerator {
     }
 
     protected function getTableData($tableName) {
-        $contents = file_get_contents(__DIR__ . "/../../../realms/db/yaml/classes/" . $tableName . '.yml');
+        if($this->isTest) {
+            $contents = file_get_contents(__DIR__ . "/../../../test/realms/" . $this->realm . "/yaml/classes/" . $tableName . '.yml');
+        }
+        else {
+            $contents = file_get_contents(__DIR__ . "/../../../realms/" . $this->realm . "/yaml/classes/" . $tableName . '.yml');
+        }
         return yaml_parse($contents);
     }
 }

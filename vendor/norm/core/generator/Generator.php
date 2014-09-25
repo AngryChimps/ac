@@ -41,20 +41,42 @@ class Generator {
 
     public function generate($realm) {
         $this->_realm = $realm;
-        $ds = DatastoreManager::getReferenceDatastore($realm);
-        $gen = new YamlGenerator($ds);
+//        $ds = DatastoreManager::getReferenceDatastore($realm);
+        $gen = new YamlGenerator($realm, false);
         $schema = $gen->getSchema();
 
-        $this->createRealmFolder();
+        $this->createRealmFolders(false);
 
         foreach($schema->tables as $table) {
-            $this->processTable($table);
+            $this->processTable($table, false);
         }
     }
 
-    protected function createRealmFolder() {
-        if(!file_exists(__DIR__ . '/../../realms/' . $this->_realm)) {
-            mkdir(__DIR__ . '/../../realms/' . $this->_realm);
+    public function generate_tests($realm) {
+        $this->_realm = $realm;
+//        $ds = DatastoreManager::getReferenceDatastore($realm);
+        $gen = new YamlGenerator($realm, true);
+        $schema = $gen->getSchema();
+
+        $this->createRealmFolders(true);
+
+        foreach($schema->tables as $table) {
+            $this->processTable($table, true);
+        }
+    }
+
+    protected function createRealmFolders($isTest) {
+        if($isTest) {
+            if (!file_exists(__DIR__ . '/../../realms/' . $this->_realm)) {
+                mkdir(__DIR__ . '/../../realms/' . $this->_realm);
+                mkdir(__DIR__ . '/../../realms/' . $this->_realm . '/base');
+            }
+        }
+        else {
+            if (!file_exists(__DIR__ . '/../../test/realms/' . $this->_realm)) {
+                mkdir(__DIR__ . '/../../test/realms/' . $this->_realm);
+                mkdir(__DIR__ . '/../../test/realms/' . $this->_realm . '/base');
+            }
         }
     }
 
@@ -102,22 +124,36 @@ class Generator {
         return $configs;
     }
 
-    protected function processTable(Table $table) {
+    protected function processTable(Table $table, $isTest) {
         $data = $this->getHandlebarsData($table);
-        $this->renderTemplate('NormObject', $data['className'], $data);
-        $this->renderTemplate('NormBaseObject', $data['className'] . 'Base', $data);
-        $this->renderTemplate('NormCollection', $data['className'] . 'Collection', $data);
-        $this->renderTemplate('NormBaseCollection', $data['className'] . 'CollectionBase', $data);
+        $this->renderTemplate('NormObject', $data['className'], $data, false, $isTest);
+        $this->renderTemplate('NormBaseObject', $data['className'] . 'Base', $data, true, $isTest);
+        $this->renderTemplate('NormCollection', $data['className'] . 'Collection', $data, false, $isTest);
+        $this->renderTemplate('NormBaseCollection', $data['className'] . 'CollectionBase', $data, true, $isTest);
     }
 
-    protected function renderTemplate($templateName, $className, $data) {
+    protected function renderTemplate($templateName, $className, $data, $isBaseObject, $isTest) {
 
         $engine = new Handlebars(array(
             'loader' => new \Handlebars\Loader\FilesystemLoader(__DIR__.'/templates/', array('extension' => 'txt')),
         ));
         $rendered = $engine->render($templateName, $data);
 
-        $filename = __DIR__ . '/../../realms/' . $this->_realm . '/' . $className . '.php';
+        if($isTest) {
+            if ($isBaseObject) {
+                $filename = __DIR__ . '/../../test/realms/' . $this->_realm . '/base/' . $className . '.php';
+            } else {
+                $filename = __DIR__ . '/../../test/realms/' . $this->_realm . '/' . $className . '.php';
+            }
+        }
+        else {
+            if ($isBaseObject) {
+                $filename = __DIR__ . '/../../realms/' . $this->_realm . '/base/' . $className . '.php';
+            } else {
+                $filename = __DIR__ . '/../../realms/' . $this->_realm . '/' . $className . '.php';
+            }
+        }
+
         if(!file_exists($filename)) {
             touch($filename);
         }
@@ -131,6 +167,7 @@ class Generator {
         $data['className'] = Utils::table2class($table->name);
         $data['realm'] = $this->_realm;
         $data['namespace'] = "norm\\realms\\" . $this->_realm;
+        $data['fullyQualifiedBaseObject'] = $data['namespace'] . "\\base\\" . $data['className'] . 'Base';
         $data['primaryDatastoreName'] = !empty($this->_classConfigs[$table->name]['primaryDatastoreName'])
             ? $this->_classConfigs[$table->name]['primaryDatastoreName']
             : Config::$realms[$this->_realm]['defaultPrimaryDatastore'];
@@ -159,7 +196,7 @@ class Generator {
         $data['fieldNamesQuotedString'] = Utils::array2quotedString($data['fieldNames']);
         $data['fieldTypesQuotedString'] = Utils::array2quotedString($data['fieldTypes']);
         $data['propertyNamesQuotedString'] = Utils::array2quotedString($data['propertyNames']);
-        $data['hasAutoIncrement'] = ($data['autoIncrementFieldName'] === null) ? 'true' : 'false';
+        $data['hasAutoIncrement'] = ($data['autoIncrementFieldName'] === null) ? 'false' : 'true';
 
         $data['primaryKeyFieldNames'] = array();
         $data['primaryKeyPropertyNames'] = array();
@@ -221,6 +258,23 @@ class Generator {
 
                 $data['reverseForeignKeys'][] = $newFk;
             }
+        }
+
+        //Process Enums
+        $data['enums'] = array();
+        foreach($table->enums as $enum) {
+            $enumArray = array();
+            $cnt = 1;
+
+            foreach($enum->values as $value) {
+                $valueArray = array();
+                $valueArray['name'] = ucfirst($value) . ucfirst($enum->name);
+                $valueArray['value'] = $cnt;
+                $enumArray['values'][] = $valueArray;
+                $cnt++;
+            }
+
+            $data['enums'][] = $enumArray;
         }
 
 //        if(isset($this->_reverseForeignKeysByTable[$table->getName()])) {
