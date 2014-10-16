@@ -12,6 +12,7 @@ use \norm\core\datastore\AbstractDatastore;
 use norm\core\datastore\DatastoreManager;
 use \norm\config\Config;
 use \norm\core\exceptions\CannotChangePrimaryKeyException;
+use Symfony\Component\Validator\Constraints\DateTime;
 
 
 abstract class NormBaseObject {
@@ -46,6 +47,9 @@ abstract class NormBaseObject {
     }
 
     public function save() {
+        //Set created_at updated_at datetimes
+        $this->updateDateTimes();
+
         if($this->_hasBeenPersisted) {
             $this->checkPrimaryKeyValuesHaveNotChanged();
             $this->_db->update(static::$realm, static::$tableName, $this->getPrimaryKeyData(), $this->getFieldDataWithoutPrimaryKeys());
@@ -64,6 +68,15 @@ abstract class NormBaseObject {
         }
 
         $this->updateOriginalValues();
+    }
+
+    protected function updateDateTimes() {
+        if(in_array('created_at', static::$fieldNames) && $this->createdAt !== null) {
+            $this->createdAt = new \DateTime();
+        }
+        if(in_array('updated_at', static::$fieldNames)) {
+            $this->updatedAt = new \DateTime();
+        }
     }
 
     protected function updateOriginalValues() {
@@ -112,6 +125,11 @@ abstract class NormBaseObject {
 
         $ds = DatastoreManager::getDatastore(static::$primaryDatastoreName);
         $data = $ds->read(static::$realm, static::$tableName, $pkData);
+
+        if($data === null) {
+            return null;
+        }
+
         $obj = new $className();
         $obj->loadByFieldDataArray($data);
 

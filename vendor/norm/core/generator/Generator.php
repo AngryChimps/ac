@@ -69,15 +69,15 @@ class Generator {
 
     protected function createRealmFolders() {
         if($this->_isTest) {
-            if (!file_exists(__DIR__ . '/../../realms/' . $this->_realm)) {
-                mkdir(__DIR__ . '/../../realms/' . $this->_realm);
-                mkdir(__DIR__ . '/../../realms/' . $this->_realm . '/base');
-            }
-        }
-        else {
             if (!file_exists(__DIR__ . '/../../test/realms/' . $this->_realm)) {
                 mkdir(__DIR__ . '/../../test/realms/' . $this->_realm);
                 mkdir(__DIR__ . '/../../test/realms/' . $this->_realm . '/base');
+            }
+        }
+        else {
+            if (!file_exists(__DIR__ . '/../../realms/' . $this->_realm)) {
+                mkdir(__DIR__ . '/../../realms/' . $this->_realm);
+                mkdir(__DIR__ . '/../../realms/' . $this->_realm . '/base');
             }
         }
     }

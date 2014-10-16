@@ -19,6 +19,15 @@ class MemberTest extends AbstractRiakTestCase {
         return $mem;
     }
 
+    /**
+     * @return \norm\test\realms\_riak\Member
+     */
+    public static function getNewSavedObject() {
+        $mem = self::getNewUnsavedObject();
+        $mem->save();
+        return $mem;
+    }
+
     public function testSaveNew() {
         $mem = self::getNewUnsavedObject();
         $mem->save();
@@ -55,5 +64,15 @@ class MemberTest extends AbstractRiakTestCase {
         $dbObjDecompressed = json_decode($dbObj);
 
         assertEquals($dbObjDecompressed->key, $normObj->key);
+    }
+
+    public function testDelete() {
+        $mem = self::getNewSavedObject();
+        $key = $mem->key;
+        $mem->delete();
+
+        $mem2 = Member::getByPk($key);
+
+        assertNull($mem2);
     }
 }
