@@ -68,7 +68,7 @@ abstract class AbstractPdoDatastore extends AbstractDatastore {
         return $return;
     }
 
-    public function create($tableName, $fieldData, $primaryKeys, $autoIncrementFieldName)
+    public function create($realm, $tableName, $fieldData, $primaryKeys, $autoIncrementFieldName)
     {
         $params = array();
         foreach($fieldData as $fieldName => $value) {
@@ -84,7 +84,7 @@ abstract class AbstractPdoDatastore extends AbstractDatastore {
         return (!empty($autoIncrementFieldName) ? $this->_connection->lastInsertId() : null);
     }
 
-    public function read($tableName, $primaryKeys)
+    public function read($realm, $tableName, $primaryKeys)
     {
         $params = array();
         $where = '';
@@ -119,7 +119,7 @@ abstract class AbstractPdoDatastore extends AbstractDatastore {
         return $this->readBySql($sql, $params);
     }
 
-    public function update($tableName, $primaryKeys, $fieldDataWithoutPrimaryKeys)
+    public function update($realm, $tableName, $primaryKeys, $fieldDataWithoutPrimaryKeys)
     {
         $params = array();
         $sql = 'UPDATE ' . $tableName . ' SET ';
@@ -144,7 +144,7 @@ abstract class AbstractPdoDatastore extends AbstractDatastore {
         }
     }
 
-    public function delete($tableName, $primaryKeys)
+    public function delete($realm, $tableName, $primaryKeys)
     {
         $params = array();
         $sql = 'SELECT * FROM ' . $tableName . ' WHERE ';
@@ -159,13 +159,13 @@ abstract class AbstractPdoDatastore extends AbstractDatastore {
         $this->query($sql, $params);
     }
 
-    public function createCollection($tableName, $fieldData, $primaryKeys, $autoIncrementFieldName)
+    public function createCollection($realm, $tableName, $fieldData, $primaryKeys, $autoIncrementFieldName)
     {
         if(!empty($autoIncrementFieldName)) {
             $ids = array();
 
             for($i=0; $i<count($fieldData); $i++) {
-                $ids[] = $this->create($tableName, $fieldData[$i], $primaryKeys[$i], $autoIncrementFieldName);
+                $ids[] = $this->create($realm, $tableName, $fieldData[$i], $primaryKeys[$i], $autoIncrementFieldName);
             }
 
             return $ids;
@@ -192,7 +192,7 @@ abstract class AbstractPdoDatastore extends AbstractDatastore {
         }
     }
 
-    public function readCollection($tableName, $primaryKeys)
+    public function readCollection($realm, $tableName, $primaryKeys)
     {
         //If there is only a signle primary key in the table, we can use a WHERE IN clause
         if(count($primaryKeys[0]) === 1) {
@@ -212,7 +212,7 @@ abstract class AbstractPdoDatastore extends AbstractDatastore {
         }
         else {
             for($i=0; $i < count($primaryKeys); $i++) {
-                return $this->read($tableName, $primaryKeys[$i]);
+                return $this->read($realm, $tableName, $primaryKeys[$i]);
             }
         }
     }
@@ -228,14 +228,14 @@ abstract class AbstractPdoDatastore extends AbstractDatastore {
     }
 
 
-    public function updateCollection($tableName, $primaryKeys, $fieldDataWithoutPrimaryKeys)
+    public function updateCollection($realm, $tableName, $primaryKeys, $fieldDataWithoutPrimaryKeys)
     {
         for($i=0; $i < count($primaryKeys); $i++) {
-            $this->update($tableName, $primaryKeys[$i], $fieldDataWithoutPrimaryKeys);
+            $this->update($realm, $tableName, $primaryKeys[$i], $fieldDataWithoutPrimaryKeys);
         }
     }
 
-    public function deleteCollection($tableName, $primaryKeys)
+    public function deleteCollection($realm, $tableName, $primaryKeys)
     {
         //If there is only a signle primary key in the table, we can use a WHERE IN clause
         if(count($primaryKeys[0]) === 1) {
@@ -254,7 +254,7 @@ abstract class AbstractPdoDatastore extends AbstractDatastore {
         }
         else {
             for($i=0; $i < count($primaryKeys); $i++) {
-                $this->delete($tableName, $primaryKeys[$i]);
+                $this->delete($realm, $tableName, $primaryKeys[$i]);
             }
         }
     }

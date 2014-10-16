@@ -2,19 +2,19 @@ primary_keys:
   - id
 
 fields:
+  - name: ad_key
+    type: string
   - name: id
     type: int
     autoincrement: true
-  - name: ad_key
-    type: string
   - name: location_key
     type: string
   - name: company_key
     type: string
-  - name: category_name
-    type: string
-  - name: subcategory_name
-    type: string
+  - name: category_id
+    type: int
+  - name: subcategory_id
+    type: int
   - name: title
     type: string
   - name: description
@@ -23,13 +23,11 @@ fields:
     type: int
   - name: minutes_booking_notice
     type: int
-  - name: minutes_avail_interval
-    type: int
   - name: price
     type: decimal
   - name: discount
     type: float
-  - name: body
+  - name: description
     type: string
   - name: status
     type: enum

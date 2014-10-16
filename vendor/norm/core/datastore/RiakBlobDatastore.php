@@ -18,12 +18,12 @@ class RiakBlobDatastore extends AbstractRiakDatastore {
         return implode('|', $primaryKeys);
     }
 
-    public function create($tableName, $fieldData, $primaryKeys, $autoIncrementFieldName)
+    public function create($realm, $tableName, $fieldData, $primaryKeys, $autoIncrementFieldName)
     {
         if(!empty($autoIncrementFieldName)) {
             throw new \Exception('Auto-increment fields are not supported in the RiakBlobDatastore');
         }
-        $bucket = $this->getBucket($tableName);
+        $bucket = $this->getBucket($realm, $tableName);
         $key = $this->_getKeyName($primaryKeys);
         $data = json_encode($fieldData);
 
@@ -32,19 +32,26 @@ class RiakBlobDatastore extends AbstractRiakDatastore {
         $bucket->put($obj);
     }
 
-    public function read($tableName, $primaryKeys)
+    public function read($realm, $tableName, $primaryKeys)
     {
-        $bucket = $this->getBucket($tableName);
+        $bucket = $this->getBucket($realm, $tableName);
         $key = $this->_getKeyName($primaryKeys);
 
         $response = $bucket->get($key);
 
-        return json_decode($response);
+        if($response->hasObject()) {
+            $content = $response->getFirstObject();
+            $json = $content->getContent();
+            return json_decode($json);
+        }
+        else {
+            return null;
+        }
     }
 
-    public function update($tableName, $primaryKeys, $fieldDataWithoutPrimaryKeys)
+    public function update($realm, $tableName, $primaryKeys, $fieldDataWithoutPrimaryKeys)
     {
-        $bucket = $this->getBucket($tableName);
+        $bucket = $this->getBucket($realm, $tableName);
         $key = $this->_getKeyName($primaryKeys);
         $data = json_encode(array_merge($primaryKeys, $fieldDataWithoutPrimaryKeys));
 
@@ -63,9 +70,9 @@ class RiakBlobDatastore extends AbstractRiakDatastore {
         $bucket->put($readObject);
     }
 
-    public function delete($tableName, $primaryKeys)
+    public function delete($realm, $tableName, $primaryKeys)
     {
-        $bucket = $this->getBucket($tableName);
+        $bucket = $this->getBucket($realm, $tableName);
         $key = $this->_getKeyName($primaryKeys);
 
         // Read back the object from Riak
@@ -83,52 +90,52 @@ class RiakBlobDatastore extends AbstractRiakDatastore {
         $bucket->delete($readObject);
     }
 
-    public function createCollection($tableName, $fieldData, $primaryKeys, $autoIncrementFieldName)
+    public function createCollection($realm, $tableName, $fieldData, $primaryKeys, $autoIncrementFieldName)
     {
         for($i=0; $i<count($primaryKeys); $i++) {
-            $this->create($tableName, $fieldData[$i], $primaryKeys[$i], $autoIncrementFieldName);
+            $this->create($realm, $tableName, $fieldData[$i], $primaryKeys[$i], $autoIncrementFieldName);
         }
     }
 
-    public function readCollection($tableName, $primaryKeys)
+    public function readCollection($realm, $tableName, $primaryKeys)
     {
         $arr = array();
         foreach($primaryKeys as $pk) {
-            $arr[] = $this->read($tableName, $pk);
+            $arr[] = $this->read($realm, $tableName, $pk);
         }
         return $arr;
     }
 
-    public function updateCollection($tableName, $primaryKeys, $fieldDataWithoutPrimaryKeys)
+    public function updateCollection($realm, $tableName, $primaryKeys, $fieldDataWithoutPrimaryKeys)
     {
         for($i=0; $i<count($primaryKeys); $i++) {
-            $this->update($tableName, $primaryKeys[$i], $fieldDataWithoutPrimaryKeys[$i]);
+            $this->update($realm, $tableName, $primaryKeys[$i], $fieldDataWithoutPrimaryKeys[$i]);
         }
     }
 
-    public function deleteCollection($tableName, $primaryKeys)
+    public function deleteCollection($realm, $tableName, $primaryKeys)
     {
         for($i=0; $i<count($primaryKeys); $i++) {
-            $this->delete($tableName, $primaryKeys[$i]);
+            $this->delete($realm, $tableName, $primaryKeys[$i]);
         }
     }
 
-    public function readBySql($sql, $params, $normObject)
+    public function readBySql($sql, $params)
     {
         throw new MethodNotImplemented(__METHOD__, get_called_class());
     }
 
-    public function readByWhere($tableName, $where, $params, $normObject)
+    public function readByWhere($tableName, $where, $params)
     {
         throw new MethodNotImplemented(__METHOD__, get_called_class());
     }
 
-    public function readCollectionBySql($sql, $params, $normCollection)
+    public function readCollectionBySql($sql, $params)
     {
         throw new MethodNotImplemented(__METHOD__, get_called_class());
     }
 
-    public function readCollectionByWhere($tableName, $where, $params, $normCollection)
+    public function readCollectionByWhere($tableName, $where, $params)
     {
         throw new MethodNotImplemented(__METHOD__, get_called_class());
     }

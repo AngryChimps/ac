@@ -9,7 +9,6 @@
 namespace norm\core\generator;
 
 
-use norm\config\Config;
 use norm\core\datastore\DatastoreManager;
 use \norm\core\exceptions\InvalidForeignKeyMultipleColumnsException;
 use norm\core\generator\generators\MysqlGenerator;
@@ -23,6 +22,7 @@ use Handlebars\Handlebars;
 
 class Generator {
     protected $_realm;
+    protected $_isTest;
     protected $_schemaManager;
 
     /**
@@ -41,11 +41,12 @@ class Generator {
 
     public function generate($realm) {
         $this->_realm = $realm;
+        $this->_isTest = false;
 //        $ds = DatastoreManager::getReferenceDatastore($realm);
         $gen = new YamlGenerator($realm, false);
         $schema = $gen->getSchema();
 
-        $this->createRealmFolders(false);
+        $this->createRealmFolders();
 
         foreach($schema->tables as $table) {
             $this->processTable($table, false);
@@ -54,19 +55,20 @@ class Generator {
 
     public function generate_tests($realm) {
         $this->_realm = $realm;
+        $this->_isTest = true;
 //        $ds = DatastoreManager::getReferenceDatastore($realm);
         $gen = new YamlGenerator($realm, true);
         $schema = $gen->getSchema();
 
-        $this->createRealmFolders(true);
+        $this->createRealmFolders();
 
         foreach($schema->tables as $table) {
             $this->processTable($table, true);
         }
     }
 
-    protected function createRealmFolders($isTest) {
-        if($isTest) {
+    protected function createRealmFolders() {
+        if($this->_isTest) {
             if (!file_exists(__DIR__ . '/../../realms/' . $this->_realm)) {
                 mkdir(__DIR__ . '/../../realms/' . $this->_realm);
                 mkdir(__DIR__ . '/../../realms/' . $this->_realm . '/base');
@@ -160,20 +162,37 @@ class Generator {
         file_put_contents($filename, $rendered);
     }
 
+    /**
+     * @param Table $table
+     * @return array
+     */
     protected function getHandlebarsData(Table $table) {
         $data = array();
 
         $data['tableName'] = $table->name;
         $data['className'] = Utils::table2class($table->name);
         $data['realm'] = $this->_realm;
-        $data['namespace'] = "norm\\realms\\" . $this->_realm;
+
+        if($this->_isTest) {
+            $data['namespace'] = "norm\\test\\realms\\" . $this->_realm;
+            $data['primaryDatastoreName'] = !empty($this->_classConfigs[$table->name]['primaryDatastoreName'])
+                ? $this->_classConfigs[$table->name]['primaryDatastoreName']
+                : \norm\test\config\Config::$realms[$this->_realm]['defaultPrimaryDatastore'];
+            $data['cacheDatastoreName'] = !empty($this->_classConfigs[$table->name]['cacheDatastoreName'])
+                ? $this->_classConfigs[$table->name]['cacheDatastoreName']
+                : \norm\test\config\Config::$realms[$this->_realm]['defaultCacheDatastore'];
+        }
+        else {
+            $data['namespace'] = "norm\\realms\\" . $this->_realm;
+            $data['primaryDatastoreName'] = !empty($this->_classConfigs[$table->name]['primaryDatastoreName'])
+                ? $this->_classConfigs[$table->name]['primaryDatastoreName']
+                : \norm\config\Config::$realms[$this->_realm]['defaultPrimaryDatastore'];
+            $data['cacheDatastoreName'] = !empty($this->_classConfigs[$table->name]['cacheDatastoreName'])
+                ? $this->_classConfigs[$table->name]['cacheDatastoreName']
+                : \norm\config\Config::$realms[$this->_realm]['defaultCacheDatastore'];
+        }
         $data['fullyQualifiedBaseObject'] = $data['namespace'] . "\\base\\" . $data['className'] . 'Base';
-        $data['primaryDatastoreName'] = !empty($this->_classConfigs[$table->name]['primaryDatastoreName'])
-            ? $this->_classConfigs[$table->name]['primaryDatastoreName']
-            : Config::$realms[$this->_realm]['defaultPrimaryDatastore'];
-        $data['cacheDatastoreName'] = !empty($this->_classConfigs[$table->name]['cacheDatastoreName'])
-            ? $this->_classConfigs[$table->name]['cacheDatastoreName']
-            : Config::$realms[$this->_realm]['defaultCacheDatastore'];
+        $data['fullyQualifiedBaseCollectionObject'] = $data['namespace'] . "\\base\\" . $data['className'] . 'CollectionBase';
 
         $data['fieldNames'] = array();
         $data['propertyNames'] = array();
@@ -225,13 +244,23 @@ class Generator {
             $newFk['remoteColumn'] = $fk->referencedColumnName;
             $newFk['propertyName'] = self::getPropertyFromFkFieldName($fk->columnName);
             $newFk['propertyClass'] = Utils::table2class($fk->referencedTableName);
-            $newFk['propertyClassWithNamespace'] = "\\norm\\realms\\" . $this->_realm . "\\"
-                . Utils::table2class($fk->referencedTableName);
             $newFk['localPropertyIdFieldName'] = Utils::field2property($fk->referencedColumnName);
             $newFk['remotePropertyClass'] = Utils::table2class($fk->tableName);
-            $newFk['remotePropertyClassWithNamespace'] = "\\norm\\realms\\" . $this->_realm . "\\"
-                . Utils::table2class($fk->tableName);
+
             $newFk['remotePropertyIdFieldName'] = Utils::field2property($fk->referencedColumnName);
+            if($this->_isTest) {
+                $newFk['propertyClassWithNamespace'] = "\\norm\\test\\realms\\" . $this->_realm . "\\"
+                    . Utils::table2class($fk->referencedTableName);
+                $newFk['remotePropertyClassWithNamespace'] = "\\norm\\test\\realms\\" . $this->_realm . "\\"
+                    . Utils::table2class($fk->tableName);
+            }
+            else {
+                $newFk['propertyClassWithNamespace'] = "\\norm\\realms\\" . $this->_realm . "\\"
+                    . Utils::table2class($fk->referencedTableName);
+                $newFk['remotePropertyClassWithNamespace'] = "\\norm\\realms\\" . $this->_realm . "\\"
+                    . Utils::table2class($fk->tableName);
+            }
+
 
             $data['foreignKeys'][] = $newFk;
         }
@@ -246,16 +275,24 @@ class Generator {
                 $newFk['remoteTableName'] = $fk->referencedTableName;
                 $newFk['remoteColumn'] = $fk->referencedColumnName;
                 $newFk['propertyName'] = self::getPropertyFromFkFieldName($fk->columnName);
-                $newFk['propertyClass'] = Utils::table2class($fk->referencedTableName);
-                $newFk['propertyClassWithNamespace'] = "\\norm\\realms\\" . $this->_realm . "\\"
-                    . Utils::table2class($fk->referencedTableName);
                 $newFk['localPropertyIdFieldName'] = Utils::field2property($fk->columnName);
 
                 $newFk['remotePropertyClass'] = Utils::table2class($fk->tableName);
-                $newFk['remotePropertyClassWithNamespace'] = "\\norm\\realms\\" . $this->_realm . "\\"
-                    . Utils::table2class($fk->tableName);
                 $newFk['remotePropertyIdFieldName'] = Utils::field2property($fk->referencedColumnName);
+                $newFk['propertyClass'] = Utils::table2class($fk->referencedTableName);
 
+                if($this->_isTest) {
+                    $newFk['propertyClassWithNamespace'] = "\\norm\\test\\realms\\" . $this->_realm . "\\"
+                        . Utils::table2class($fk->referencedTableName);
+                    $newFk['remotePropertyClassWithNamespace'] = "\\norm\\test\\realms\\" . $this->_realm . "\\"
+                        . Utils::table2class($fk->tableName);
+                }
+                else {
+                    $newFk['propertyClassWithNamespace'] = "\\norm\\realms\\" . $this->_realm . "\\"
+                        . Utils::table2class($fk->referencedTableName);
+                    $newFk['remotePropertyClassWithNamespace'] = "\\norm\\realms\\" . $this->_realm . "\\"
+                        . Utils::table2class($fk->tableName);
+                }
                 $data['reverseForeignKeys'][] = $newFk;
             }
         }

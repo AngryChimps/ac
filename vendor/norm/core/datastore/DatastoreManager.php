@@ -10,7 +10,6 @@ namespace norm\core\datastore;
 
 
 use Doctrine\DBAL\DriverManager;
-use norm\config\Config;
 use norm\core\NormBaseObject;
 use \Doctrine\DBAL\Configuration;
 use \norm\core\datastore\MysqlTableDatastore;
@@ -28,7 +27,12 @@ class DatastoreManager {
      */
     public static function getDatastore($datastoreName) {
         if(!array_key_exists($datastoreName, self::$_datastores)) {
-            $configParams = Config::$datastores[$datastoreName];
+            if(strpos($datastoreName, '__norm_test_') === 0) {
+                $configParams = \norm\test\config\Config::$datastores[$datastoreName];
+            }
+            else {
+                $configParams = \norm\config\Config::$datastores[$datastoreName];
+            }
 
             switch($configParams['driver']) {
                 case 'mysql':
@@ -42,6 +46,11 @@ class DatastoreManager {
                 case 'redis_hash':
                     self::$_datastores[$datastoreName] = new RedisHashDatastore($configParams);
                     break;
+
+                case 'riak_blob':
+                    self::$_datastores[$datastoreName] = new RiakBlobDatastore($configParams);
+                    break;
+
             }
         }
 

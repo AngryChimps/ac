@@ -1,10 +1,11 @@
 <?php
 
-namespace {{namespace}}/base;
+namespace {{namespace}}\base;
 
 use norm\core\NormBaseCollection;
 
 class {{className}}CollectionBase extends NormBaseCollection {
+    protected static $realm = '{{realm}}';
     protected static $tableName = '{{tableName}}';
     protected static $singularClassName = '{{className}}';
     protected static $primaryKeyFieldNames = array({{primaryKeyFieldNamesQuotedString}});

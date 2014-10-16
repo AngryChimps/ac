@@ -48,25 +48,33 @@ abstract class NormBaseObject {
     public function save() {
         if($this->_hasBeenPersisted) {
             $this->checkPrimaryKeyValuesHaveNotChanged();
-            $this->_db->update(static::$tableName, $this->getPrimaryKeyData(), $this->getFieldDataWithoutPrimaryKeys());
+            $this->_db->update(static::$realm, static::$tableName, $this->getPrimaryKeyData(), $this->getFieldDataWithoutPrimaryKeys());
         }
         else {
             if(empty(static::$autoIncrementPropertyName)) {
-                $this->_db->create(static::$tableName, $this->_fieldData, $this->getPrimaryKeyData(),
+                $this->_db->create(static::$realm, static::$tableName, $this->getFieldData(), $this->getPrimaryKeyData(),
                     static::$autoIncrementPropertyName);
             }
             else {
-                $id = $this->_db->create(static::$tableName, $this->getFieldData(),
+                $id = $this->_db->create(static::$realm, static::$tableName, $this->getFieldData(),
                     $this->getPrimaryKeyData(), static::$autoIncrementPropertyName);
                 $this->{static::$autoIncrementPropertyName} = (int) $id;
             }
             $this->_hasBeenPersisted = true;
         }
+
+        $this->updateOriginalValues();
+    }
+
+    protected function updateOriginalValues() {
+        foreach(static::$propertyNames as $name) {
+            $this->_originalPropertyData[$name] = $this->$name;
+        }
     }
 
     protected function checkPrimaryKeyValuesHaveNotChanged() {
         foreach(static::$primaryKeyPropertyNames as $pkName) {
-            if($this->$pkName !== $this->_originalPropertyData) {
+            if($this->$pkName !== $this->_originalPropertyData[$pkName]) {
                 throw new CannotChangePrimaryKeyException(static::$primaryDatastoreName, static::$tableName);
             }
         }
@@ -83,7 +91,7 @@ abstract class NormBaseObject {
             return;
         }
 
-        $this->_db->delete(static::$tableName, $this->getPrimaryKeyData());
+        $this->_db->delete(static::$realm, static::$tableName, $this->getPrimaryKeyData());
     }
 
     public static function getByPk($pk) {
@@ -103,7 +111,7 @@ abstract class NormBaseObject {
         }
 
         $ds = DatastoreManager::getDatastore(static::$primaryDatastoreName);
-        $data = $ds->read(static::$tableName, $pkData);
+        $data = $ds->read(static::$realm, static::$tableName, $pkData);
         $obj = new $className();
         $obj->loadByFieldDataArray($data);
 
@@ -151,23 +159,46 @@ abstract class NormBaseObject {
         }
     }
 
-    public function loadByFieldDataArray($arr) {
-        for($i=0; $i < count($arr); $i++) {
-            switch(static::$fieldTypes[$i]) {
-                case 'int':
-                    $this->{static::$propertyNames[$i]} = (int) $arr[$i];
-                    break;
-                case 'bool':
-                    $this->{static::$propertyNames[$i]} = (bool) $arr[$i];
-                    break;
-                case 'float':
-                    $this->{static::$propertyNames[$i]} = (float) $arr[$i];
-                    break;
-                case 'DateTime':
-                    $this->{static::$propertyNames[$i]} = new DateTime($arr[$i]);
-                    break;
-                default:
-                    $this->{static::$propertyNames[$i]} = $arr[$i];
+    public function loadByFieldDataArray($arr)
+    {
+        if (is_array($arr)) {
+            for ($i = 0; $i < count($arr); $i++) {
+                switch (static::$fieldTypes[$i]) {
+                    case 'int':
+                        $this->{static::$propertyNames[$i]} = (int)$arr[$i];
+                        break;
+                    case 'bool':
+                        $this->{static::$propertyNames[$i]} = (bool)$arr[$i];
+                        break;
+                    case 'float':
+                        $this->{static::$propertyNames[$i]} = (float)$arr[$i];
+                        break;
+                    case 'DateTime':
+                        $this->{static::$propertyNames[$i]} = new DateTime($arr[$i]);
+                        break;
+                    default:
+                        $this->{static::$propertyNames[$i]} = $arr[$i];
+                }
+            }
+        }
+        else {
+            for ($i = 0; $i < count($arr); $i++) {
+                switch (static::$fieldTypes[$i]) {
+                    case 'int':
+                        $this->{static::$propertyNames[$i]} = (int)$arr->{static::$propertyNames[$i]};
+                        break;
+                    case 'bool':
+                        $this->{static::$propertyNames[$i]} = (bool)$arr->{static::$propertyNames[$i]};
+                        break;
+                    case 'float':
+                        $this->{static::$propertyNames[$i]} = (float)$arr->{static::$propertyNames[$i]};
+                        break;
+                    case 'DateTime':
+                        $this->{static::$propertyNames[$i]} = new DateTime($arr->{static::$propertyNames[$i]});
+                        break;
+                    default:
+                        $this->{static::$propertyNames[$i]} = $arr->{static::$propertyNames[$i]};
+                }
             }
         }
     }

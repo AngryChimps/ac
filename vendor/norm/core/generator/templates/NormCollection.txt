@@ -2,6 +2,7 @@
 
 namespace {{namespace}};
 
+use {{fullyQualifiedBaseCollectionObject}};
 
 class {{className}}Collection extends {{className}}CollectionBase {
 

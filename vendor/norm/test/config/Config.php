@@ -1,16 +1,16 @@
 <?php
 
-namespace norm\config;
+namespace norm\test\config;
 
 class Config {
 
     public static $realms = array(
-        'riak' => array(
-            'defaultPrimaryDatastore' => 'riak',
+        '_riak' => array(
+            'defaultPrimaryDatastore' => '__norm_test_riak',
             'defaultCacheDatastore' => null,
         ),
-        'mysql' => array(
-            'defaultPrimaryDatastore' => 'mysql',
+        '_mysql' => array(
+            'defaultPrimaryDatastore' => '__norm_test_mysql',
             'defaultCacheDatastore' => null,
         ),
     );
@@ -19,14 +19,14 @@ class Config {
      * @var array
      */
     public static $datastores = array (
-        'riak' => array(
-            'driver' => 'riak',
+        '__norm_test_riak' => array(
+            'driver' => 'riak_blob',
             'host' => 'localhost',
             'port' => 8087
         ),
-        'mysql' => array(
+        '__norm_test_mysql' => array(
             'driver' => 'mysql',
-            'dbname' => '_norm_test',
+            'dbname' => 'norm_test',
             'host' => 'localhost',
             'port' => 3379,
             'user' => 'root',

@@ -5,6 +5,8 @@ namespace norm\core\datastore;
 
 
 abstract class AbstractRiakDatastore extends AbstractDatastore {
+    const PREFIX = '__norm';
+
     /** @var \Riak\Connection  */
     public $connection;
 
@@ -15,17 +17,17 @@ abstract class AbstractRiakDatastore extends AbstractDatastore {
         $this->connection = new \Riak\Connection($configParams['host'], $configParams['port']);
     }
 
-    protected function _getBucketName($tablename) {
-        return '||norm||' . $tablename;
+    protected function _getBucketName($realm, $tablename) {
+        return self::PREFIX . ':' . $realm . ':' . $tablename . ':objects';
     }
 
     /**
      * @param $tablename
      * @return \Riak\Bucket
      */
-    protected function getBucket($tablename) {
+    protected function getBucket($realm, $tablename) {
         if(!isset($this->buckets[$tablename])) {
-            $this->buckets[$tablename] = new \Riak\Bucket($this->connection, $this->_getBucketName($tablename));
+            $this->buckets[$tablename] = new \Riak\Bucket($this->connection, $this->_getBucketName($realm, $tablename));
         }
 
         return $this->buckets[$tablename];

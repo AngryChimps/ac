@@ -23,6 +23,7 @@ class NormBaseCollection extends \ArrayObject {
      */
     private $_cache;
 
+    protected static $realm;
     protected static $tableName;
     protected static $singularClassName;
     protected static $primaryKeyFieldNames;
@@ -57,7 +58,7 @@ class NormBaseCollection extends \ArrayObject {
     }
 
     public function loadByIds($ids) {
-        $this->_db->readCollection(static::$tableName, $ids, $this);
+        $this->_db->readCollection(static::$realm, static::$tableName, $ids, $this);
     }
 
     public function loadByWhere($where, $params) {
@@ -78,12 +79,12 @@ class NormBaseCollection extends \ArrayObject {
         }
 
         if(count($newObjectFieldData) > 0) {
-            $this->_db->createCollection(static::$tableName, $newObjectFieldData, static::$autoIncrementFieldName, true);
+            $this->_db->createCollection(static::$realm, static::$tableName, $newObjectFieldData, static::$autoIncrementFieldName, true);
         }
     }
 
     public function delete() {
-        $this->_db->deleteCollection(static::$tableName, $this->getPrimaryKeyData());
+        $this->_db->deleteCollection(static::$realm, static::$tableName, $this->getPrimaryKeyData());
     }
 
     public function getPrimaryKeyData() {

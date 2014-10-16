@@ -15,14 +15,14 @@ use norm\core\NormBaseCollection;
 abstract class AbstractDatastore {
     protected $connection;
 
-    public abstract function create($tableName, $fieldData, $primaryKeys, $autoIncrementFieldName);
-    public abstract function read($tableName, $primaryKeys);
-    public abstract function update($tableName, $primaryKeys, $fieldDataWithoutPrimaryKeys);
-    public abstract function delete ($tableName, $primaryKeys);
-    public abstract function createCollection($tableName, $fieldData, $primaryKeys, $autoIncrementFieldName);
-    public abstract function readCollection($tableName, $primaryKeys);
-    public abstract function updateCollection($tableName, $primaryKeys, $fieldDataWithoutPrimaryKeys);
-    public abstract function deleteCollection ($tableName, $primaryKeys);
+    public abstract function create($realm, $tableName, $fieldData, $primaryKeys, $autoIncrementFieldName);
+    public abstract function read($realm, $tableName, $primaryKeys);
+    public abstract function update($realm, $tableName, $primaryKeys, $fieldDataWithoutPrimaryKeys);
+    public abstract function delete ($realm, $tableName, $primaryKeys);
+    public abstract function createCollection($realm, $tableName, $fieldData, $primaryKeys, $autoIncrementFieldName);
+    public abstract function readCollection($realm, $tableName, $primaryKeys);
+    public abstract function updateCollection($realm, $tableName, $primaryKeys, $fieldDataWithoutPrimaryKeys);
+    public abstract function deleteCollection ($realm, $tableName, $primaryKeys);
 
     public abstract function readBySql($sql, $params);
     public abstract function readByWhere($tableName, $where, $params);
