@@ -6,6 +6,7 @@
     "autoload": {
         "psr-0": { "": "src/", "SymfonyStandard": "app/" }
     },
+    "minimum-stability": "dev",
     "require": {
         "php": ">=5.3.3",
         "symfony/symfony": "2.5.*",
@@ -18,8 +19,9 @@
         "sensio/distribution-bundle": "~3.0",
         "sensio/framework-extra-bundle": "~3.0",
         "incenteev/composer-parameter-handler": "~2.0",
-        "jms/serializer": "0.16.0",
-        "friendsofsymfony/rest-bundle": "~1.4"
+        "jms/serializer": "master",
+        "friendsofsymfony/rest-bundle": "~1.4",
+        "jms/serializer-bundle": "master"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3",
