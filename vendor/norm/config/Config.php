@@ -8,20 +8,22 @@ class Config {
         'riak' => array(
             'defaultPrimaryDatastore' => 'riak',
             'defaultCacheDatastore' => null,
+            'generator' => 'yaml',
         ),
         'mysql' => array(
             'defaultPrimaryDatastore' => 'mysql',
             'defaultCacheDatastore' => null,
+            'generator' => 'database',
+            'referenceDatastore'  => array(
+                'driver' => 'mysql',
+                'dbname' => 'ac_ref',
+                'host' => 'localhost',
+                'port' => 3379,
+                'user' => 'root',
+                'password' => '',
+            ),
         ),
 //        '_norm_test' => array(
-//            'referenceDatastore'  => array(
-//                'driver' => 'mysql',
-//                'dbname' => 'norm',
-//                'host' => 'localhost',
-//                'port' => 3379,
-//                'user' => 'root',
-//                'password' => '',
-//            ),
 ////            'tablePrefix' => '',
 ////            'defaultStorageEngine' => 'innodb',
 ////            'defaultCollation' => 'utf8',

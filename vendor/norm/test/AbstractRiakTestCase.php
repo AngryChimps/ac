@@ -6,7 +6,7 @@ namespace norm\test;
 
 use norm\test\config\Config;
 
-require_once '../vendor/phpunit/phpunit/src/Framework/Assert/Functions.php';
+require_once __DIR__ . '/../vendor/phpunit/phpunit/src/Framework/Assert/Functions.php';
 
 abstract class AbstractRiakTestCase extends AbstractTestCase {
     const PREFIX = '__norm';

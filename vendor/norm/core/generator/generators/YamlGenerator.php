@@ -29,7 +29,8 @@ class YamlGenerator extends AbstractGenerator {
         $schema = new Schema();
 
         foreach($this->getTableNames() as $tableName) {
-echo "Processing table: $tableName\n";
+            echo "Processing table: $tableName\n";
+
             $table = new Table();
             $table->name = $tableName;
 //            $table->comment = $row['TABLE_COMMENT'];

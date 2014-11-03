@@ -5,6 +5,7 @@ namespace norm\test\realms\_riak\base;
 use norm\core\NormBaseCollection;
 
 class CommentCollectionBase extends NormBaseCollection {
+    protected static $realm = '_riak';
     protected static $tableName = 'comment';
     protected static $singularClassName = 'Comment';
     protected static $primaryKeyFieldNames = array('comment_key');

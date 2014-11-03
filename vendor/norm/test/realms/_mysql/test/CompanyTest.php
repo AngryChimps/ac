@@ -7,7 +7,7 @@ use norm\test\realms\_mysql\Company;
 use norm\test\realms\_mysql\Address;
 use norm\test\AbstractMysqlTestCase;
 
-require_once("../core/autoload.php");
+require_once(__DIR__ . "/../../../../core/autoload.php");
 
 class CompanyTest extends AbstractMysqlTestCase {
 

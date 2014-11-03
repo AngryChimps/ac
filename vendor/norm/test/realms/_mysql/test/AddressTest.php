@@ -5,7 +5,7 @@ namespace norm\test\realms\mysql;
 use norm\test\realms\_mysql\Address;
 use norm\test\AbstractMysqlTestCase;
 
-require_once("../core/autoload.php");
+require_once(__DIR__ . "/../../../../core/autoload.php");
 
 class AddressTest extends AbstractMysqlTestCase {
 

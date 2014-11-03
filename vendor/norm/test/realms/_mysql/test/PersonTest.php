@@ -9,7 +9,7 @@ use norm\test\realms\_mysql\Company;
 use norm\test\realms\_mysql\Person;
 use norm\test\realms\_mysql\Address;
 
-require_once("../core/autoload.php");
+require_once(__DIR__ . "/../../../../core/autoload.php");
 
 class PersonTest extends AbstractMysqlTestCase {
 

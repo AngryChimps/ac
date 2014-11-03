@@ -8,7 +8,7 @@ use PHPUnit_Extensions_Database_DataSet_IDataSet;
 use PHPUnit_Extensions_Database_DB_IDatabaseConnection;
 use norm\test\config\Config;
 
-require_once '../vendor/phpunit/phpunit/src/Framework/Assert/Functions.php';
+require_once __DIR__ . '/../vendor/phpunit/phpunit/src/Framework/Assert/Functions.php';
 
 abstract class AbstractPdoTestCase extends \PHPUnit_Extensions_Database_TestCase {
     const REALM = '_mysql';

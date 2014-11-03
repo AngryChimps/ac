@@ -5,7 +5,7 @@ if($argc < 2) {
     exit('Invalid arguments');
 }
 
-require_once '../core/autoload.php';
+require_once __DIR__ . '/../core/autoload.php';
 
 set_include_path('.:../vendor/doctrine/common/lib:../vendor/doctrine/dbal/lib');
 
@@ -26,6 +26,6 @@ switch($argv[1]) {
         break;
 
     case 'test':
-        system("phpunit --verbose ../test");
+        system("phpunit --verbose " . __DIR__ . "/../test");
         break;
 }

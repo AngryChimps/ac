@@ -5,6 +5,7 @@ namespace norm\test\realms\_riak\base;
 use norm\core\NormBaseCollection;
 
 class MemberCompanyRatingCollectionBase extends NormBaseCollection {
+    protected static $realm = '_riak';
     protected static $tableName = 'member_company_rating';
     protected static $singularClassName = 'MemberCompanyRating';
     protected static $primaryKeyFieldNames = array();
