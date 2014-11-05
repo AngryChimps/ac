@@ -1,3 +1,11 @@
+test_tester:
+    resource: "@TestTesterBundle/Resources/config/routing.yml"
+    prefix:   /
+
+ac_norm:
+    resource: "@ACNormBundle/Resources/config/routing.yml"
+    prefix:   /
+
 angry_chimps_ac:
     resource: "@AngryChimpsAcBundle/Resources/config/routing.yml"
     prefix:   /

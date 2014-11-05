@@ -1,0 +1,22 @@
+ac_norm:
+    realms:
+        - riak
+            primary_datastore: "riak_ds"
+            cache_datastore: null
+        - mysql
+            primary_datastore: "mysql_ds"
+            cache_datastore: null
+    environments:
+        - dev
+            datastores:
+                - riak_ds
+                    driver: "riak_blob"
+                    host: "localhost"
+                    port: 8087
+                - mysql_ds
+                    driver: "mysql"
+                    db_name: "ac"
+                    host: "localhost"
+                    port: 3379
+                    user: "root"
+                    password: ""

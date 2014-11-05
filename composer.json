@@ -4,7 +4,11 @@
     "type": "project",
     "description": "The \"Symfony Standard Edition\" distribution",
     "autoload": {
-        "psr-0": { "": "src/", "SymfonyStandard": "app/" }
+        "psr-0": {
+            "": "src/",
+            "SymfonyStandard": "app/",
+            "AC": "vendor/angrychimps/norm-bundle/" 
+        }
     },
     "minimum-stability": "dev",
     "require": {

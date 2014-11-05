@@ -19,6 +19,8 @@ class AppKernel extends Kernel
             new AngryChimps\AcBundle\AngryChimpsAcBundle(),
             new JMS\SerializerBundle\JMSSerializerBundle(),
             new FOS\RestBundle\FOSRestBundle(),
+            new AC\NormBundle\ACNormBundle(),
+//            new Test\TesterBundle\TestTesterBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {
