@@ -1,10 +1,6 @@
 <?php
 namespace norm\core;
 
-require_once('autoload.php');
-use \norm\config\Config;
-use \norm\core\exceptions\OneValueQueryException;
-
 class Norm {
     protected static $db_handles;
 
