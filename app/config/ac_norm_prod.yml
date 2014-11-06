@@ -1,10 +1,10 @@
 ac_norm:
     datastores:
-        riak_ds
+        riak_ds:
             driver: "riak_blob"
             host: "localhost"
             port: 8087
-        mysql_ds
+        mysql_ds:
             driver: "mysql"
             db_name: "ac"
             host: "localhost"
