@@ -1,19 +1,10 @@
 ac_norm:
-    realms:
-        - riak:
-            namespace: "Norm\riak"
-            primary_datastore: "riak_ds"
-            cache_datastore: null
-        - mysql:
-            namespace: "Norm\mysql"
-            primary_datastore: "mysql_ds"
-            cache_datastore: null
     datastores:
-        - riak_ds
+        riak_ds
             driver: "riak_blob"
             host: "localhost"
             port: 8087
-        - mysql_ds
+        mysql_ds
             driver: "mysql"
             db_name: "ac"
             host: "localhost"
