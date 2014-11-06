@@ -1,5 +1,5 @@
 <?php
-namespace Norm\mysql\base;
+namespace Norm\riak\base;
 
 use norm\core\NormBaseObject;
 
@@ -12,25 +12,25 @@ class CompanyBase extends NormBaseObject {
     protected static $cacheDatastoreName = '';
 
     /** @var  string */
-    protected static $realm = 'mysql';
+    protected static $realm = 'riak';
 
     /** @var  string */
     protected static $tableName = 'company';
 
     /** @var string[] */
-    protected static $fieldNames = array('id', 'key', 'name', 'description', 'address', 'plan', 'rating_count', 'rating_total', 'rating_avg', 'flag_total', 'administer_member_keys', 'location_keys', '', 'created_at', 'updated_at');
+    protected static $fieldNames = array('company_key', 'name', 'description', 'address', 'plan', 'rating_count', 'rating_total', 'rating_avg', 'flag_total', 'administer_member_keys', 'location_keys', '', 'created_at', 'updated_at');
 
     /** @var string[] */
-    protected static $fieldTypes = array('int', 'string', 'string', 'string', 'string', 'int', 'int', 'int', 'float', 'int', 'string[]', 'string[]', 'int', 'DateTime', 'DateTime');
+    protected static $fieldTypes = array('string', 'string', 'string', 'string', 'int', 'int', 'int', 'float', 'int', 'string[]', 'string[]', 'int', 'DateTime', 'DateTime');
 
     /** @var  string[] */
-    protected static $propertyNames = array('id', 'key', 'name', 'description', 'address', 'plan', 'ratingCount', 'ratingTotal', 'ratingAvg', 'flagTotal', 'administerMemberKeys', 'locationKeys', '', 'createdAt', 'updatedAt');
+    protected static $propertyNames = array('companyKey', 'name', 'description', 'address', 'plan', 'ratingCount', 'ratingTotal', 'ratingAvg', 'flagTotal', 'administerMemberKeys', 'locationKeys', '', 'createdAt', 'updatedAt');
 
     /** @var  string[] */
-    protected static $primaryKeyFieldNames = array('id');
+    protected static $primaryKeyFieldNames = array('company_key');
 
     /** @var  string[] */
-    protected static $primaryKeyPropertyNames = array('id');
+    protected static $primaryKeyPropertyNames = array('companyKey');
 
     /** @var  string[] */
     protected static $autoIncrementFieldName = '';
@@ -50,11 +50,8 @@ class CompanyBase extends NormBaseObject {
     const Closed = 2;
     const Prohibited = 3;
 
-    /** @var int */
-    public $id;
-
     /** @var string */
-    public $key;
+    public $companyKey;
 
     /** @var string */
     public $name;
@@ -98,7 +95,15 @@ class CompanyBase extends NormBaseObject {
 
 
 
-    /** @returns \norm\realms\mysql\Location */
+    /** @returns Norm\riak\Comment */
+    public function getCommentCollection() {
+        if($this->Comment === null) {
+            $this->loadComment();
+        }
+        return $this->Comment;
+    }
+
+    /** @returns Norm\riak\Location */
     public function getLocationCollection() {
         if($this->Location === null) {
             $this->loadLocation();
@@ -106,6 +111,10 @@ class CompanyBase extends NormBaseObject {
         return $this->Location;
     }
 
+
+    protected function loadCommentCollection() {
+        parent::loadPropertyCollection('Comment', 'comment', 'company_key', 'companyKey');
+    }
 
     protected function loadLocationCollection() {
         parent::loadPropertyCollection('Location', 'location', 'company_key', 'companyKey');

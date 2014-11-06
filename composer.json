@@ -8,6 +8,8 @@
             "": "src/",
             "SymfonyStandard": "app/",
             "AC": "vendor/angrychimps/norm-bundle/",
+            "Norm": "src/AngryChimps/NormBundle/realms/",
+            "NormTests": "vendor/angrychimps/norm-bundle/AC/NormBundle/Tests/realms/",
             "Handlebars": "vendor/angrychimps/norm-bundle/AC/NormBundle/vendor/xamin/handlebars.php/src/"
         }
     },
