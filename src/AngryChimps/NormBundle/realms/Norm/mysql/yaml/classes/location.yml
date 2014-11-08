@@ -5,7 +5,7 @@ fields:
   - name: id
     type: int
     autoincrement: true
-  - name: location_key
+  - name: key
     type: string
   - name: company_key
     type: string

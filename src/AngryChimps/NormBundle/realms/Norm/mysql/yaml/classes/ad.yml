@@ -2,11 +2,11 @@ primary_keys:
   - id
 
 fields:
-  - name: ad_key
-    type: string
   - name: id
     type: int
     autoincrement: true
+  - name: key
+    type: string
   - name: location_key
     type: string
   - name: company_key

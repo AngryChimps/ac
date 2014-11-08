@@ -11,20 +11,12 @@ fields:
     type: string
   - name: password
     type: string
-  - name: first
-    type: string
-  - name: last
+  - name: name
     type: string
   - name: dob
     type: Date
   - name: photo
     type: string
-  - name: address
-    type: sring
-  - name: lat
-    type: float
-  - name: long
-    type: float
   - name: status
     type: enum
     values:
