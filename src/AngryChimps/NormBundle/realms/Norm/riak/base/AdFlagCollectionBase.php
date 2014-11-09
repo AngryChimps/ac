@@ -2,7 +2,7 @@
 
 namespace Norm\riak\base;
 
-use norm\core\NormBaseCollection;
+use AC\NormBundle\core\NormBaseCollection;
 
 class AdFlagCollectionBase extends NormBaseCollection {
     protected static $realm = 'riak';

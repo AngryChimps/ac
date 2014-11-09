@@ -1,7 +1,7 @@
 <?php
 namespace Norm\riak\base;
 
-use norm\core\NormBaseObject;
+use AC\NormBundle\core\NormBaseObject;
 
 class AdFlagBase extends NormBaseObject {
 

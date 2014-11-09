@@ -2,7 +2,7 @@
 
 namespace Norm\riak\base;
 
-use norm\core\NormBaseCollection;
+use AC\NormBundle\core\NormBaseCollection;
 
 class CommentCollectionBase extends NormBaseCollection {
     protected static $realm = 'riak';

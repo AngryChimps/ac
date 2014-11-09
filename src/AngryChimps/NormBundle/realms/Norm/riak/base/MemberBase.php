@@ -1,7 +1,7 @@
 <?php
 namespace Norm\riak\base;
 
-use norm\core\NormBaseObject;
+use AC\NormBundle\core\NormBaseObject;
 
 class MemberBase extends NormBaseObject {
 
@@ -18,13 +18,13 @@ class MemberBase extends NormBaseObject {
     protected static $tableName = 'member';
 
     /** @var string[] */
-    protected static $fieldNames = array('member_key', 'email', 'password', 'first', 'last', 'dob', 'photo', 'address', 'lat', 'long', 'status', 'blocked_company_keys', 'managed_company_keys', 'ad_flag_keys', 'message_flag_keys', 'created_at', 'updated_at');
+    protected static $fieldNames = array('member_key', 'email', 'password', 'name', 'dob', 'photo', 'status', 'blocked_company_keys', 'managed_company_keys', 'ad_flag_keys', 'message_flag_keys', 'created_at', 'updated_at');
 
     /** @var string[] */
-    protected static $fieldTypes = array('string', 'string', 'string', 'string', 'string', 'Date', 'string', 'sring', 'float', 'float', 'int', 'string[]', 'string[]', 'string[]', 'string[]', 'DateTime', 'DateTime');
+    protected static $fieldTypes = array('string', 'string', 'string', 'string', 'Date', 'string', 'int', 'string[]', 'string[]', 'string[]', 'string[]', 'DateTime', 'DateTime');
 
     /** @var  string[] */
-    protected static $propertyNames = array('memberKey', 'email', 'password', 'first', 'last', 'dob', 'photo', 'address', 'lat', 'long', 'status', 'blockedCompanyKeys', 'managedCompanyKeys', 'adFlagKeys', 'messageFlagKeys', 'createdAt', 'updatedAt');
+    protected static $propertyNames = array('memberKey', 'email', 'password', 'name', 'dob', 'photo', 'status', 'blockedCompanyKeys', 'managedCompanyKeys', 'adFlagKeys', 'messageFlagKeys', 'createdAt', 'updatedAt');
 
     /** @var  string[] */
     protected static $primaryKeyFieldNames = array('member_key');
@@ -58,25 +58,13 @@ class MemberBase extends NormBaseObject {
     public $password;
 
     /** @var string */
-    public $first;
-
-    /** @var string */
-    public $last;
+    public $name;
 
     /** @var Date */
     public $dob;
 
     /** @var string */
     public $photo;
-
-    /** @var sring */
-    public $address;
-
-    /** @var float */
-    public $lat;
-
-    /** @var float */
-    public $long;
 
     /** @var int */
     public $status;
